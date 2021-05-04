@@ -76,6 +76,7 @@ class SpringSecurityJwtApplicationTests {
         wrongUserMap.put("email", "abc@email.com");
         wrongUserMap.put("password", "wrongpassword");
 
+
         NestedServletException exception = assertThrows(NestedServletException.class,
                 () -> mockMvc.perform(post("/login")
                         .content(mapper.writeValueAsString(wrongUserMap))
@@ -89,6 +90,7 @@ class SpringSecurityJwtApplicationTests {
                 .content(mapper.writeValueAsString(userMap))
                 .contentType(MediaType.APPLICATION_JSON));
 
+
         String token = mockMvc.perform(post("/login")
                 .content(mapper.writeValueAsString(userMap))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -96,6 +98,7 @@ class SpringSecurityJwtApplicationTests {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
+
 
         assertThat(token.length(), greaterThan(1));
     }
@@ -121,6 +124,7 @@ class SpringSecurityJwtApplicationTests {
 
         TokenResponse tokenResponse = mapper.readValue(tokens, TokenResponse.class);
 
+
         mockMvc.perform(get("/users/hello")
                 .header("Authorization", "Bearer " + tokenResponse.getAccessToken()))
                 .andExpect(status().isOk())
@@ -141,6 +145,7 @@ class SpringSecurityJwtApplicationTests {
                 .getContentAsString();
 
         TokenResponse tokenResponse = mapper.readValue(tokens, TokenResponse.class);
+
 
         mockMvc.perform(get("/users/hello")
                 .header("Authorization", "Bearer " + tokenResponse.getRefreshToken()))

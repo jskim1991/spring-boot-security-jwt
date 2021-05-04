@@ -3,13 +3,13 @@ package io.jay.springsecurityjwt.authentication.rest;
 import io.jay.springsecurityjwt.authentication.JwtTokenProvider;
 import io.jay.springsecurityjwt.authentication.User;
 import io.jay.springsecurityjwt.authentication.UserRepository;
+import io.jay.springsecurityjwt.authentication.UserRole;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,10 +27,15 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public Long signup(@RequestBody Map<String, String> user) {
+
+        List<UserRole> roles = new ArrayList<>();
+        roles.add(UserRole.ROLE_USER);
+        roles.add(UserRole.ROLE_ADMIN);
+
         User newUser = User.builder()
                 .email(user.get("email"))
                 .password(passwordEncoder.encode(user.get("password")))
-                .roles(Collections.singletonList("ROLE_USER"))
+                .roles(roles)
                 .build();
         return userRepository.save(newUser).getId();
     }
@@ -51,5 +56,11 @@ public class UserController {
     @GetMapping("/users/hello")
     public String hello() {
         return "Hello user from /users/hello";
+    }
+
+    @GetMapping("/admin/{id}")
+    public User getUser(@PathVariable Long id) {
+        User user = userRepository.findById(id).get();
+        return user;
     }
 }
